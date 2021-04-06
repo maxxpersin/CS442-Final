@@ -1,13 +1,16 @@
 #include "IOMngr.h"
 
 FILE *source;
+FILE *source2;
 FILE *listing;
+char *_sourceName;
 int currLine = 0;
 int currColumn = 0;
 
 int openFiles(char *sourceName, char *listingName)
 {
     source = fopen(sourceName, "r");
+    _sourceName = strdup(sourceName);
 
     if (source == NULL) // Opening source failed
     {
@@ -51,9 +54,19 @@ char getNextSourceChar()
 void writeIndicator(int column)
 {
     int i = 0;
+
+    source2 = fopen(_sourceName, "r");
+    char line[1028];
+    while (i <= getCurrentLineNum())
+    {
+        fgets(line, 128, source2);
+        i++;
+    }
+
+    i = 0;
     if (listing)
     {
-        fputc('\n', listing);
+        fputs(line, listing);
         while (i < column)
         {
             fputc(' ', listing);
