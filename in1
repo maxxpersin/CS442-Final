@@ -20,3 +20,16 @@ num1 = 5 % 2;
 print num1;
 num1 = 0 % 2;
 print num1;
+
+if (num1 == 0) {
+    print num1;
+}
+
+num2 = 19;
+
+if (num2 != 20) {
+    print num2;
+}
+if (num2 != num1) {
+    print 99;
+}

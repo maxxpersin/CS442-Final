@@ -175,7 +175,7 @@ extern struct ExprRes *doModulo(struct ExprRes *Res1, struct ExprRes *Res2)
 
   Res1->Reg = reg;
   free(Res2);
-  return Res1; 
+  return Res1;
 }
 
 struct InstrSeq *doPrint(struct ExprRes *Expr)
@@ -237,7 +237,17 @@ extern struct BExprRes *doBExpr(struct ExprRes *Res1, struct ExprRes *Res2)
 
 extern struct BExprRes *doBExprNotEq(struct ExprRes *Res1, struct ExprRes *Res2)
 {
-  return NULL;
+  struct BExprRes *bRes;
+  AppendSeq(Res1->Instrs, Res2->Instrs);
+  bRes = (struct BExprRes *)malloc(sizeof(struct BExprRes));
+  bRes->Label = GenLabel();
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "beq", TmpRegName(Res1->Reg), TmpRegName(Res2->Reg), bRes->Label));
+  bRes->Instrs = Res1->Instrs;
+  ReleaseTmpReg(Res1->Reg);
+  ReleaseTmpReg(Res2->Reg);
+  free(Res1);
+  free(Res2);
+  return bRes;
 }
 
 extern struct InstrSeq *doIf(struct BExprRes *bRes, struct InstrSeq *seq)

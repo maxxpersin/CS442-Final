@@ -22,6 +22,10 @@ print					{return Write;}
 {digit}{digit}*		{return IntLit;}
 \=\=					{return EQ;}
 \!\=        {return NOT_EQ;}
+\<\=        {return LT_OR_EQ;}
+\>\=        {return GT_OR_EQ;}
+\<          {return LT;}
+\>          {return GT;}
 \=					{return '=';}
 \+					{return '+';}
 \-          {return '-';}
