@@ -175,7 +175,7 @@ extern struct ExprRes *doModulo(struct ExprRes *Res1, struct ExprRes *Res2)
 
   Res1->Reg = reg;
   free(Res2);
-  return Res1;
+  return Res1; 
 }
 
 struct InstrSeq *doPrint(struct ExprRes *Expr)
