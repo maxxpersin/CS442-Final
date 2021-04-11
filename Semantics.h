@@ -37,6 +37,7 @@ extern struct ExprRes *doSubtraction(struct ExprRes *Res1, struct ExprRes *Res2)
 extern struct ExprRes *doMult(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct ExprRes *doDiv(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct ExprRes *doExponential(struct ExprRes *Res1, struct ExprRes *Res2);
+extern struct ExprRes *doModulo(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct InstrSeq *doPrint(struct ExprRes *Expr);
 extern struct BExprRes *doBExpr(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct InstrSeq *doIf(struct BExprRes *bRes, struct InstrSeq *seq);
