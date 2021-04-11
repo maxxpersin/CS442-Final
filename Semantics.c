@@ -235,6 +235,11 @@ extern struct BExprRes *doBExpr(struct ExprRes *Res1, struct ExprRes *Res2)
   return bRes;
 }
 
+extern struct BExprRes *doBExprNotEq(struct ExprRes *Res1, struct ExprRes *Res2)
+{
+  return NULL;
+}
+
 extern struct InstrSeq *doIf(struct BExprRes *bRes, struct InstrSeq *seq)
 {
   struct InstrSeq *seq2;

@@ -41,6 +41,7 @@ extern SymTab *table;
 %token Write
 %token IF
 %token EQ	
+%token NOT_EQ
 
 %%
 
@@ -54,6 +55,7 @@ Stmt			    :	Write Expr ';'								   { $$ = doPrint($2); };
 Stmt			    :	Id '=' Expr ';'								   { $$ = doAssign($1, $3);} ;
 Stmt			    :	IF '(' BExpr ')' '{' StmtSeq '}' { $$ = doIf($3, $6);};
 BExpr		      :	Expr EQ Expr								     { $$ = doBExpr($1, $3);};
+BExpr         : Expr NOT_EQ Expr                 { $$ = doBExprNotEq($1, $3);};
 Expr			    :	Expr '+' Term								     { $$ = doAdd($1, $3); } ;
 Expr          : Expr '-' Term                    { $$ = doSubtraction($1, $3);};
 Expr			    :	Term									           { $$ = $1; };
