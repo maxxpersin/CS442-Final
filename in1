@@ -1,10 +1,22 @@
-int num1;
 int num2;
 int num3;
-num1 = 10 + 2;
-num2 = 20 * 3 + num1;
+int num4;
+int num5;
+int num1;
+num2 = 5^2 - 5;
 num3 = 5 - 5;
-print num1;
+num4 = 10 / 8;
+num5 = -3^19;
+num1 = 1 % 2;
 print num2;
 print num3;
+print num4;
+print num5;
+print num1;
 
+num1 = 2 % 2;
+print num1;
+num1 = 5 % 2;
+print num1;
+num1 = 0 % 2;
+print num1;

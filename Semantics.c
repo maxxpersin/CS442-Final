@@ -27,6 +27,18 @@ struct ExprRes *doIntLit(char *digits)
   return res;
 }
 
+extern struct ExprRes *doIntLitNeg(char *digits)
+{
+  struct ExprRes *res;
+
+  res = (struct ExprRes *)malloc(sizeof(struct ExprRes));
+  res->Reg = AvailTmpReg();
+  res->Instrs = GenInstr(NULL, "li", TmpRegName(res->Reg), digits, NULL);
+  AppendSeq(res->Instrs, GenInstr(NULL, "mul", TmpRegName(res->Reg), TmpRegName(res->Reg), "-1"));
+
+  return res;
+}
+
 struct ExprRes *doRval(char *name)
 {
 
@@ -93,6 +105,77 @@ struct ExprRes *doMult(struct ExprRes *Res1, struct ExprRes *Res2)
   Res1->Reg = reg;
   free(Res2);
   return Res1;
+}
+
+struct ExprRes *doDiv(struct ExprRes *Res1, struct ExprRes *Res2)
+{
+  int reg;
+
+  reg = AvailTmpReg();
+  AppendSeq(Res1->Instrs, Res2->Instrs);
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "div", TmpRegName(reg), TmpRegName(Res1->Reg), TmpRegName(Res2->Reg)));
+  ReleaseTmpReg(Res1->Reg);
+  ReleaseTmpReg(Res2->Reg);
+
+  Res1->Reg = reg;
+  free(Res2);
+  return Res1;
+}
+
+// Base stored in Res1->Instrs->Oprnd2
+// Exponent stored in Res2->Instrs->Oprnd2
+// Loop over exponent and create instrs where we multiply base by itself
+struct ExprRes *doExponential(struct ExprRes *Res1, struct ExprRes *Res2)
+{
+  int reg, i;
+  char *base = Res1->Instrs->Oprnd2;
+  char *exp = Res2->Instrs->Oprnd2;
+
+  reg = AvailTmpReg();
+  AppendSeq(Res1->Instrs, Res2->Instrs);
+
+  if (atoi(exp) > 1)
+  {
+    for (i = 0; i < atoi(exp) - 2; i++)
+    {
+      AppendSeq(Res1->Instrs, GenInstr(NULL, "mul", TmpRegName(Res1->Reg), TmpRegName(Res1->Reg), strdup(base)));
+    }
+
+    AppendSeq(Res1->Instrs, GenInstr(NULL, "mul", TmpRegName(reg), TmpRegName(Res1->Reg), strdup(base)));
+  }
+
+  if (atoi(exp) == 0)
+  {
+    AppendSeq(Res1->Instrs, GenInstr(NULL, "add", TmpRegName(reg), "0", "0"));
+  }
+  else if (atoi(exp) == 1)
+  {
+    AppendSeq(Res1->Instrs, GenInstr(NULL, "add", TmpRegName(reg), TmpRegName(Res1->Reg), "0"));
+  }
+
+  ReleaseTmpReg(Res1->Reg);
+  ReleaseTmpReg(Res2->Reg);
+
+  Res1->Reg = reg;
+  free(Res2);
+  return Res1;
+}
+
+// Need to do a division, then use mfhi (move from hi) to access the remainder of our operation. This is the modulo.
+extern struct ExprRes *doModulo(struct ExprRes *Res1, struct ExprRes *Res2)
+{
+  int reg;
+  reg = AvailTmpReg();
+  AppendSeq(Res1->Instrs, Res2->Instrs);
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "div", NULL, TmpRegName(Res1->Reg), TmpRegName(Res2->Reg))); // We dont care about the quotient
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "mfhi", TmpRegName(reg), NULL, NULL));
+
+  ReleaseTmpReg(Res1->Reg);
+  ReleaseTmpReg(Res2->Reg);
+
+  Res1->Reg = reg;
+  free(Res2);
+  return Res1; 
 }
 
 struct InstrSeq *doPrint(struct ExprRes *Expr)
