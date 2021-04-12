@@ -41,6 +41,8 @@ extern struct ExprRes *doModulo(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct InstrSeq *doPrint(struct ExprRes *Expr);
 extern struct BExprRes *doBExpr(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct BExprRes *doBExprNotEq(struct ExprRes *Res1, struct ExprRes *Res2);
+extern struct BExprRes *doBExprLtOrEq(struct ExprRes *Res1, struct ExprRes *Res2);
+extern struct BExprRes *doBExprGtOrEq(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct InstrSeq *doIf(struct BExprRes *bRes, struct InstrSeq *seq);
 
 extern void Finish(struct InstrSeq *Code);
