@@ -26,6 +26,7 @@ print					{return Write;}
 \>\=        {return GT_OR_EQ;}
 \<          {return LT;}
 \>          {return GT;}
+\!          {return '!';}
 \=					{return '=';}
 \+					{return '+';}
 \-          {return '-';}

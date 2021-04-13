@@ -43,6 +43,9 @@ extern struct BExprRes *doBExpr(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct BExprRes *doBExprNotEq(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct BExprRes *doBExprLtOrEq(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct BExprRes *doBExprGtOrEq(struct ExprRes *Res1, struct ExprRes *Res2);
+extern struct BExprRes *doBExprLt(struct ExprRes *Res1, struct ExprRes *Res2);
+extern struct BExprRes *doBExprGt(struct ExprRes *Res1, struct ExprRes *Res2);
+extern struct BExprRes *doNegate(struct BExprRes *Res1);
 extern struct InstrSeq *doIf(struct BExprRes *bRes, struct InstrSeq *seq);
 
 extern void Finish(struct InstrSeq *Code);

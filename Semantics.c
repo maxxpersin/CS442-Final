@@ -232,6 +232,7 @@ extern struct BExprRes *doBExpr(struct ExprRes *Res1, struct ExprRes *Res2)
   ReleaseTmpReg(Res2->Reg);
   free(Res1);
   free(Res2);
+
   return bRes;
 }
 
@@ -285,6 +286,62 @@ extern struct BExprRes *doBExprGtOrEq(struct ExprRes *Res1, struct ExprRes *Res2
   ReleaseTmpReg(Res2->Reg);
   free(Res1);
   free(Res2);
+  return bRes;
+}
+
+extern struct BExprRes *doBExprLt(struct ExprRes *Res1, struct ExprRes *Res2)
+{
+  struct BExprRes *bRes;
+  AppendSeq(Res1->Instrs, Res2->Instrs);
+  bRes = (struct BExprRes *)malloc(sizeof(struct BExprRes));
+  bRes->Label = GenLabel();
+
+  int reg;
+  reg = AvailTmpReg();
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "slt", TmpRegName(reg), TmpRegName(Res1->Reg), TmpRegName(Res2->Reg)));
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "beq", TmpRegName(reg), "$zero", bRes->Label));
+  bRes->Instrs = Res1->Instrs;
+  ReleaseTmpReg(Res1->Reg);
+  ReleaseTmpReg(Res2->Reg);
+  free(Res1);
+  free(Res2);
+  return bRes;
+}
+
+extern struct BExprRes *doBExprGt(struct ExprRes *Res1, struct ExprRes *Res2)
+{
+  struct BExprRes *bRes;
+  AppendSeq(Res1->Instrs, Res2->Instrs);
+  bRes = (struct BExprRes *)malloc(sizeof(struct BExprRes));
+  bRes->Label = GenLabel();
+
+  int reg;
+  reg = AvailTmpReg();
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "sgt", TmpRegName(reg), TmpRegName(Res1->Reg), TmpRegName(Res2->Reg)));
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "beq", TmpRegName(reg), "$zero", bRes->Label));
+  bRes->Instrs = Res1->Instrs;
+  ReleaseTmpReg(Res1->Reg);
+  ReleaseTmpReg(Res2->Reg);
+  free(Res1);
+  free(Res2);
+  return bRes;
+}
+
+extern struct BExprRes *doNegate(struct BExprRes *Res1)
+{
+  struct BExprRes *bRes;
+  bRes = (struct BExprRes *)malloc(sizeof(struct BExprRes));
+  bRes->Label = GenLabel();
+
+  int reg;
+  reg = AvailTmpReg();
+
+  AppendSeq(Res1->Instrs, GenInstr(Res1->Label, NULL, NULL, NULL, NULL));
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "not", TmpRegName(reg), Res1->Instrs->Oprnd1, NULL));
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "beq", TmpRegName(reg), "$zero", bRes->Label));
+
+  bRes->Instrs = Res1->Instrs;
+  free(Res1);
   return bRes;
 }
 

@@ -40,3 +40,13 @@ if (num2 <= num1) {
 if (num2 >= num1) {
     print 98;
 }
+
+num1 = 10000;
+
+if (num1 < num2) {
+    print num1;
+}
+
+if (num1 > num2) {
+    print num2;
+}
