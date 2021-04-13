@@ -11,7 +11,7 @@ if (!(num2+10+10 == 2*num2)) {
 print num1;
 print num2;
 
-if (!(10 == 0)) {
+if (!(10 == 10)) {
 	print 99;
 }
 

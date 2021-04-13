@@ -258,10 +258,7 @@ extern struct BExprRes *doBExprLtOrEq(struct ExprRes *Res1, struct ExprRes *Res2
   bRes = (struct BExprRes *)malloc(sizeof(struct BExprRes));
   bRes->Label = GenLabel();
 
-  int reg;
-  reg = AvailTmpReg();
-  AppendSeq(Res1->Instrs, GenInstr(NULL, "sle", TmpRegName(reg), TmpRegName(Res1->Reg), TmpRegName(Res2->Reg)));
-  AppendSeq(Res1->Instrs, GenInstr(NULL, "beq", TmpRegName(reg), "$zero", bRes->Label));
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "bgt", TmpRegName(Res1->Reg), TmpRegName(Res2->Reg), bRes->Label));
   bRes->Instrs = Res1->Instrs;
   ReleaseTmpReg(Res1->Reg);
   ReleaseTmpReg(Res2->Reg);
@@ -277,10 +274,7 @@ extern struct BExprRes *doBExprGtOrEq(struct ExprRes *Res1, struct ExprRes *Res2
   bRes = (struct BExprRes *)malloc(sizeof(struct BExprRes));
   bRes->Label = GenLabel();
 
-  int reg;
-  reg = AvailTmpReg();
-  AppendSeq(Res1->Instrs, GenInstr(NULL, "sge", TmpRegName(reg), TmpRegName(Res1->Reg), TmpRegName(Res2->Reg)));
-  AppendSeq(Res1->Instrs, GenInstr(NULL, "beq", TmpRegName(reg), "$zero", bRes->Label));
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "blt", TmpRegName(Res1->Reg), TmpRegName(Res2->Reg), bRes->Label));
   bRes->Instrs = Res1->Instrs;
   ReleaseTmpReg(Res1->Reg);
   ReleaseTmpReg(Res2->Reg);
@@ -296,10 +290,7 @@ extern struct BExprRes *doBExprLt(struct ExprRes *Res1, struct ExprRes *Res2)
   bRes = (struct BExprRes *)malloc(sizeof(struct BExprRes));
   bRes->Label = GenLabel();
 
-  int reg;
-  reg = AvailTmpReg();
-  AppendSeq(Res1->Instrs, GenInstr(NULL, "slt", TmpRegName(reg), TmpRegName(Res1->Reg), TmpRegName(Res2->Reg)));
-  AppendSeq(Res1->Instrs, GenInstr(NULL, "beq", TmpRegName(reg), "$zero", bRes->Label));
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "bge", TmpRegName(Res1->Reg), TmpRegName(Res2->Reg), bRes->Label));
   bRes->Instrs = Res1->Instrs;
   ReleaseTmpReg(Res1->Reg);
   ReleaseTmpReg(Res2->Reg);
@@ -315,10 +306,7 @@ extern struct BExprRes *doBExprGt(struct ExprRes *Res1, struct ExprRes *Res2)
   bRes = (struct BExprRes *)malloc(sizeof(struct BExprRes));
   bRes->Label = GenLabel();
 
-  int reg;
-  reg = AvailTmpReg();
-  AppendSeq(Res1->Instrs, GenInstr(NULL, "sgt", TmpRegName(reg), TmpRegName(Res1->Reg), TmpRegName(Res2->Reg)));
-  AppendSeq(Res1->Instrs, GenInstr(NULL, "beq", TmpRegName(reg), "$zero", bRes->Label));
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "ble", TmpRegName(Res1->Reg), TmpRegName(Res2->Reg), bRes->Label));
   bRes->Instrs = Res1->Instrs;
   ReleaseTmpReg(Res1->Reg);
   ReleaseTmpReg(Res2->Reg);
@@ -333,11 +321,12 @@ extern struct BExprRes *doNegate(struct BExprRes *Res1)
   bRes = (struct BExprRes *)malloc(sizeof(struct BExprRes));
   bRes->Label = GenLabel();
 
+  printf("%s, %s, %s, %s\n", Res1->Instrs->OpCode, Res1->Instrs->Oprnd1, Res1->Instrs->Oprnd2, Res1->Instrs->Oprnd3);
   int reg;
   reg = AvailTmpReg();
 
   AppendSeq(Res1->Instrs, GenInstr(Res1->Label, NULL, NULL, NULL, NULL));
-  AppendSeq(Res1->Instrs, GenInstr(NULL, "not", TmpRegName(reg), Res1->Instrs->Oprnd1, NULL));
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "not", TmpRegName(reg), Res1->Instrs->Next->Oprnd1, NULL));
   AppendSeq(Res1->Instrs, GenInstr(NULL, "beq", TmpRegName(reg), "$zero", bRes->Label));
 
   bRes->Instrs = Res1->Instrs;
