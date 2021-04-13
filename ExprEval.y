@@ -24,7 +24,7 @@ extern SymTab *table;
   char * string;
   struct ExprRes * ExprRes;
   struct InstrSeq * InstrSeq;
-  struct BExprRes * BExprRes;
+  //struct BExprRes * BExprRes;
 }
 
 %type <string> Id
@@ -33,7 +33,7 @@ extern SymTab *table;
 %type <ExprRes> Expr
 %type <InstrSeq> StmtSeq
 %type <InstrSeq> Stmt
-%type <BExprRes> BExpr
+%type <ExprRes> BExpr
 
 %token Ident 		
 %token IntLit 	
@@ -60,7 +60,7 @@ Stmt			    :	Id '=' Expr ';'								   { $$ = doAssign($1, $3);} ;
 Stmt			    :	IF '(' BExpr ')' '{' StmtSeq '}' { $$ = doIf($3, $6);};
 BExpr         : '!' BExpr                        { $$ = doNegate($2);};
 BExpr         : '(' BExpr ')'                    { $$ = $2;};
-BExpr		      :	Expr EQ Expr								     { $$ = doBExpr($1, $3);};
+BExpr		      :	Expr EQ Expr								     { $$ = doBExprEq($1, $3);};
 BExpr         : Expr NOT_EQ Expr                 { $$ = doBExprNotEq($1, $3);};
 BExpr         : Expr LT_OR_EQ Expr               { $$ = doBExprLtOrEq($1, $3);};
 BExpr         : Expr GT_OR_EQ Expr               { $$ = doBExprGtOrEq($1, $3);};
