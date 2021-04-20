@@ -24,7 +24,7 @@ extern SymTab *table;
   char * string;
   struct ExprRes * ExprRes;
   struct InstrSeq * InstrSeq;
-  struct BExprRes * BExprRes;
+  //struct BExprRes * BExprRes;
 }
 
 %type <string> Id
@@ -33,7 +33,7 @@ extern SymTab *table;
 %type <ExprRes> Expr
 %type <InstrSeq> StmtSeq
 %type <InstrSeq> Stmt
-%type <BExprRes> BExpr
+%type <ExprRes> BExpr
 
 %token Ident 		
 %token IntLit 	
@@ -41,6 +41,13 @@ extern SymTab *table;
 %token Write
 %token IF
 %token EQ	
+%token NOT_EQ
+%token LT
+%token GT
+%token LT_OR_EQ
+%token GT_OR_EQ
+%token OR
+%token AND
 
 %%
 
@@ -53,7 +60,16 @@ StmtSeq		    :											             { $$ = NULL;} ;
 Stmt			    :	Write Expr ';'								   { $$ = doPrint($2); };
 Stmt			    :	Id '=' Expr ';'								   { $$ = doAssign($1, $3);} ;
 Stmt			    :	IF '(' BExpr ')' '{' StmtSeq '}' { $$ = doIf($3, $6);};
-BExpr		      :	Expr EQ Expr								     { $$ = doBExpr($1, $3);};
+BExpr         : '!' BExpr                        { $$ = doNegate($2);};
+BExpr         : BExpr OR BExpr                   { $$ = doOr($1, $3);};
+BExpr         : BExpr AND BExpr                  { $$ = doAnd($1, $3);};
+BExpr         : '(' BExpr ')'                    { $$ = $2;};
+BExpr		      :	Expr EQ Expr								     { $$ = doBExprEq($1, $3);};
+BExpr         : Expr NOT_EQ Expr                 { $$ = doBExprNotEq($1, $3);};
+BExpr         : Expr LT_OR_EQ Expr               { $$ = doBExprLtOrEq($1, $3);};
+BExpr         : Expr GT_OR_EQ Expr               { $$ = doBExprGtOrEq($1, $3);};
+BExpr         : Expr LT Expr                     { $$ = doBExprLt($1, $3);};
+BExpr         : Expr GT Expr                     { $$ = doBExprGt($1, $3);};
 Expr			    :	Expr '+' Term								     { $$ = doAdd($1, $3); } ;
 Expr          : Expr '-' Term                    { $$ = doSubtraction($1, $3);};
 Expr			    :	Term									           { $$ = $1; };

@@ -17,3 +17,10 @@ $ ./comp <file to compile> <error output file> <compilation output file>
 ```
 $ spim run <asm file>
 ```
+
+# Alternative Execution
+In the terminal, run
+```
+$ ./compile.sh
+```
+To compile and execute with the input program set as in1.txt

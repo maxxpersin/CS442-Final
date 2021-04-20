@@ -39,7 +39,15 @@ extern struct ExprRes *doDiv(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct ExprRes *doExponential(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct ExprRes *doModulo(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct InstrSeq *doPrint(struct ExprRes *Expr);
-extern struct BExprRes *doBExpr(struct ExprRes *Res1, struct ExprRes *Res2);
-extern struct InstrSeq *doIf(struct BExprRes *bRes, struct InstrSeq *seq);
+extern struct ExprRes *doBExprEq(struct ExprRes *Res1, struct ExprRes *Res2);
+extern struct ExprRes *doBExprNotEq(struct ExprRes *Res1, struct ExprRes *Res2);
+extern struct ExprRes *doBExprLtOrEq(struct ExprRes *Res1, struct ExprRes *Res2);
+extern struct ExprRes *doBExprGtOrEq(struct ExprRes *Res1, struct ExprRes *Res2);
+extern struct ExprRes *doBExprLt(struct ExprRes *Res1, struct ExprRes *Res2);
+extern struct ExprRes *doBExprGt(struct ExprRes *Res1, struct ExprRes *Res2);
+extern struct ExprRes *doNegate(struct ExprRes *Res1);
+extern struct ExprRes *doOr(struct ExprRes *Res1, struct ExprRes *Res2);
+extern struct ExprRes *doAnd(struct ExprRes *Res1, struct ExprRes *Res2);
+extern struct InstrSeq *doIf(struct ExprRes *Res, struct InstrSeq *seq);
 
 extern void Finish(struct InstrSeq *Code);
