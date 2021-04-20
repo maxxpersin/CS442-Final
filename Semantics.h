@@ -27,6 +27,12 @@ struct BExprRes
   struct InstrSeq *Instrs;
 };
 
+struct Node
+{
+  char *name;
+  struct Node *next;
+};
+
 /* Semantics Actions */
 extern struct ExprRes *doIntLit(char *digits);
 extern struct ExprRes *doIntLitNeg(char *digits);
@@ -39,6 +45,7 @@ extern struct ExprRes *doDiv(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct ExprRes *doExponential(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct ExprRes *doModulo(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct InstrSeq *doPrint(struct ExprRes *Expr);
+extern struct InstrSeq *doRead(struct Node *node);
 extern struct ExprRes *doBExprEq(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct ExprRes *doBExprNotEq(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct ExprRes *doBExprLtOrEq(struct ExprRes *Res1, struct ExprRes *Res2);
@@ -49,5 +56,7 @@ extern struct ExprRes *doNegate(struct ExprRes *Res1);
 extern struct ExprRes *doOr(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct ExprRes *doAnd(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct InstrSeq *doIf(struct ExprRes *Res, struct InstrSeq *seq);
+
+extern struct Node *appendToArgList(char *c, struct Node *next);
 
 extern void Finish(struct InstrSeq *Code);

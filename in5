@@ -1,0 +1,16 @@
+int num1;
+int num2;
+int num3;
+int num4;
+
+read(num1, num2, num3);
+read();
+read(num4);
+
+print num1;
+print num2;
+print num3;
+
+if (num4 > 10) {
+    print num4;
+}

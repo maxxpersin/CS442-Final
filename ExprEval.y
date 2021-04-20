@@ -24,7 +24,7 @@ extern SymTab *table;
   char * string;
   struct ExprRes * ExprRes;
   struct InstrSeq * InstrSeq;
-  //struct BExprRes * BExprRes;
+  struct Node * Node;
 }
 
 %type <string> Id
@@ -34,6 +34,7 @@ extern SymTab *table;
 %type <InstrSeq> StmtSeq
 %type <InstrSeq> Stmt
 %type <ExprRes> BExpr
+%type <Node> ArgList
 
 %token Ident 		
 %token IntLit 	
@@ -48,6 +49,7 @@ extern SymTab *table;
 %token GT_OR_EQ
 %token OR
 %token AND
+%token Read
 
 %%
 
@@ -58,6 +60,7 @@ Dec			      :	Int Ident {enterName(table, yytext); }';'	{};
 StmtSeq 		  :	Stmt StmtSeq								     { $$ = AppendSeq($1, $2); } ;
 StmtSeq		    :											             { $$ = NULL;} ;
 Stmt			    :	Write Expr ';'								   { $$ = doPrint($2); };
+Stmt          : Read '(' ArgList ')' ';'         { $$ = doRead($3); };
 Stmt			    :	Id '=' Expr ';'								   { $$ = doAssign($1, $3);} ;
 Stmt			    :	IF '(' BExpr ')' '{' StmtSeq '}' { $$ = doIf($3, $6);};
 BExpr         : '!' BExpr                        { $$ = doNegate($2);};
@@ -70,6 +73,9 @@ BExpr         : Expr LT_OR_EQ Expr               { $$ = doBExprLtOrEq($1, $3);};
 BExpr         : Expr GT_OR_EQ Expr               { $$ = doBExprGtOrEq($1, $3);};
 BExpr         : Expr LT Expr                     { $$ = doBExprLt($1, $3);};
 BExpr         : Expr GT Expr                     { $$ = doBExprGt($1, $3);};
+ArgList       : Id                               { $$ = appendToArgList($1, NULL); };
+ArgList       : Id ',' ArgList                   { $$ = appendToArgList($1, $3);};
+ArgList       :                                  {};
 Expr			    :	Expr '+' Term								     { $$ = doAdd($1, $3); } ;
 Expr          : Expr '-' Term                    { $$ = doSubtraction($1, $3);};
 Expr			    :	Term									           { $$ = $1; };

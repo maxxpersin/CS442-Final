@@ -199,6 +199,24 @@ struct InstrSeq *doPrint(struct ExprRes *Expr)
   return code;
 }
 
+extern struct InstrSeq *doRead(struct Node *node)
+{
+  struct InstrSeq *code = (struct InstrSeq *)malloc(sizeof(struct InstrSeq));
+
+
+  struct Node *curr = node;
+  while (curr)
+  {
+    AppendSeq(code, GenInstr(NULL, "li", "$v0", "5", NULL));
+    AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
+    AppendSeq(code, GenInstr(NULL, "sw", "$v0", curr->name, NULL));
+
+    curr = curr->next;
+  }
+
+  return code;
+}
+
 struct InstrSeq *doAssign(char *name, struct ExprRes *Expr)
 {
 
@@ -400,6 +418,16 @@ extern struct InstrSeq *doIf(struct ExprRes *Res, struct InstrSeq *seq)
   AppendSeq(seq2, GenInstr(label, NULL, NULL, NULL, NULL));
   free(Res);
   return seq2;
+}
+
+extern struct Node *appendToArgList(char *c, struct Node *next)
+{
+  struct Node *curr = (struct Node *)malloc(sizeof(struct Node));
+
+  curr->name = strdup(c);
+  curr->next = next;
+
+  return curr;
 }
 
 /*
