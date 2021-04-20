@@ -336,10 +336,58 @@ extern struct ExprRes *doNegate(struct ExprRes *Res1)
   Res = (struct ExprRes *)malloc(sizeof(struct ExprRes));
   AppendSeq(Res1->Instrs, GenInstr(NULL, "not", TmpRegName(reg), TmpRegName(Res1->Reg), NULL));
 
+  // This next bit should (ideally) clear all of our garbage bits
+  // I hate mips
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "sll", TmpRegName(reg), TmpRegName(reg), "31"));
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "srl", TmpRegName(reg), TmpRegName(reg), "31"));
+
   Res->Reg = reg;
   Res->Instrs = Res1->Instrs;
   ReleaseTmpReg(Res1->Reg);
   free(Res1);
+  return Res;
+}
+
+extern struct ExprRes *doOr(struct ExprRes *Res1, struct ExprRes *Res2)
+{
+  struct ExprRes *Res;
+  int reg = AvailTmpReg();
+
+  Res = (struct ExprRes *)malloc(sizeof(struct ExprRes));
+  AppendSeq(Res1->Instrs, Res2->Instrs);
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "or", TmpRegName(reg), TmpRegName(Res1->Reg), TmpRegName(Res2->Reg)));
+
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "sll", TmpRegName(reg), TmpRegName(reg), "31"));
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "srl", TmpRegName(reg), TmpRegName(reg), "31"));
+
+  Res->Reg = reg;
+  Res->Instrs = Res1->Instrs;
+  ReleaseTmpReg(Res1->Reg);
+  ReleaseTmpReg(Res2->Reg);
+  free(Res1);
+  free(Res2);
+  return Res;
+}
+
+extern struct ExprRes *doAnd(struct ExprRes *Res1, struct ExprRes *Res2)
+{
+  struct ExprRes *Res;
+  int reg = AvailTmpReg();
+
+  Res = (struct ExprRes *)malloc(sizeof(struct ExprRes));
+  AppendSeq(Res1->Instrs, Res2->Instrs);
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "and", TmpRegName(reg), TmpRegName(Res1->Reg), TmpRegName(Res2->Reg)));
+
+  // I'm leaving this here in case I find out I need to do this in the future
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "sll", TmpRegName(reg), TmpRegName(reg), "31"));
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "srl", TmpRegName(reg), TmpRegName(reg), "31"));
+
+  Res->Reg = reg;
+  Res->Instrs = Res1->Instrs;
+  ReleaseTmpReg(Res1->Reg);
+  ReleaseTmpReg(Res2->Reg);
+  free(Res1);
+  free(Res2);
   return Res;
 }
 

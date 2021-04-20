@@ -27,6 +27,8 @@ print					{return Write;}
 \<          {return LT;}
 \>          {return GT;}
 \!          {return '!';}
+\|\|        {return OR;}
+\&\&        {return AND;}
 \=					{return '=';}
 \+					{return '+';}
 \-          {return '-';}
