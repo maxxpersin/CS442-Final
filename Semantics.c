@@ -156,25 +156,6 @@ struct ExprRes *doExponential(struct ExprRes *Res1, struct ExprRes *Res2)
 
   AppendSeq(Res1->Instrs, GenInstr(label2, NULL, NULL, NULL, NULL));
 
-  // if (atoi(exp) > 1)
-  // {
-  //   for (i = 0; i < atoi(exp) - 2; i++)
-  //   {
-  //     AppendSeq(Res1->Instrs, GenInstr(NULL, "mul", TmpRegName(Res1->Reg), TmpRegName(Res1->Reg), strdup(base)));
-  //   }
-
-  //   AppendSeq(Res1->Instrs, GenInstr(NULL, "mul", TmpRegName(reg), TmpRegName(Res1->Reg), strdup(base)));
-  // }
-
-  // if (atoi(exp) == 0)
-  // {
-  //   AppendSeq(Res1->Instrs, GenInstr(NULL, "add", TmpRegName(reg), "0", "0"));
-  // }
-  // else if (atoi(exp) == 1)
-  // {
-  //   AppendSeq(Res1->Instrs, GenInstr(NULL, "add", TmpRegName(reg), TmpRegName(Res1->Reg), "0"));
-  // }
-
   ReleaseTmpReg(Res1->Reg);
   ReleaseTmpReg(Res2->Reg);
   ReleaseTmpReg(reg2);
