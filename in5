@@ -7,10 +7,12 @@ read(num1, num2, num3);
 read();
 read(num4);
 
-print num1;
-print num2;
-print num3;
+print(num1);
+print(num2);
+print(num3);
 
 if (num4 > 10) {
-    print num4;
+    print(num4);
 }
+
+print(-100, 100, 5^2, num4);

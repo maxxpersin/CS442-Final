@@ -29,7 +29,7 @@ struct BExprRes
 
 struct Node
 {
-  char *name;
+  void *name;
   struct Node *next;
 };
 
@@ -44,7 +44,7 @@ extern struct ExprRes *doMult(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct ExprRes *doDiv(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct ExprRes *doExponential(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct ExprRes *doModulo(struct ExprRes *Res1, struct ExprRes *Res2);
-extern struct InstrSeq *doPrint(struct ExprRes *Expr);
+extern struct InstrSeq *doPrint(struct Node *node);
 extern struct InstrSeq *doRead(struct Node *node);
 extern struct ExprRes *doBExprEq(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct ExprRes *doBExprNotEq(struct ExprRes *Res1, struct ExprRes *Res2);
@@ -58,5 +58,6 @@ extern struct ExprRes *doAnd(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct InstrSeq *doIf(struct ExprRes *Res, struct InstrSeq *seq);
 
 extern struct Node *appendToArgList(char *c, struct Node *next);
+extern struct Node *appendToExprList(struct ExprRes *Res1, struct Node *next);
 
 extern void Finish(struct InstrSeq *Code);

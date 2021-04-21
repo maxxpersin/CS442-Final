@@ -178,23 +178,35 @@ extern struct ExprRes *doModulo(struct ExprRes *Res1, struct ExprRes *Res2)
   return Res1;
 }
 
-struct InstrSeq *doPrint(struct ExprRes *Expr)
+struct InstrSeq *doPrint(struct Node *node)
 {
 
-  struct InstrSeq *code;
+  struct InstrSeq *code = (struct InstrSeq *)malloc(sizeof(struct InstrSeq));
 
-  code = Expr->Instrs;
+  struct Node *curr = node;
+  while (curr)
+  {
+    struct ExprRes *currInstr = (struct ExprRes *)curr->name;
+    AppendSeq(code, currInstr->Instrs);
+    AppendSeq(code, GenInstr(NULL, "li", "$v0", "1", NULL));
+    AppendSeq(code, GenInstr(NULL, "move", "$a0", TmpRegName(currInstr->Reg), NULL));
+    AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
 
-  AppendSeq(code, GenInstr(NULL, "li", "$v0", "1", NULL));
-  AppendSeq(code, GenInstr(NULL, "move", "$a0", TmpRegName(Expr->Reg), NULL));
-  AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
+    curr = curr->next;
+  }
+
+  // code = Expr->Instrs;
+
+  // AppendSeq(code, GenInstr(NULL, "li", "$v0", "1", NULL));
+  // AppendSeq(code, GenInstr(NULL, "move", "$a0", TmpRegName(Expr->Reg), NULL));
+  // AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
 
   AppendSeq(code, GenInstr(NULL, "li", "$v0", "4", NULL));
   AppendSeq(code, GenInstr(NULL, "la", "$a0", "_nl", NULL));
   AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
 
-  ReleaseTmpReg(Expr->Reg);
-  free(Expr);
+  // ReleaseTmpReg(Expr->Reg);
+  // free(Expr);
 
   return code;
 }
@@ -203,13 +215,12 @@ extern struct InstrSeq *doRead(struct Node *node)
 {
   struct InstrSeq *code = (struct InstrSeq *)malloc(sizeof(struct InstrSeq));
 
-
   struct Node *curr = node;
   while (curr)
   {
     AppendSeq(code, GenInstr(NULL, "li", "$v0", "5", NULL));
     AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
-    AppendSeq(code, GenInstr(NULL, "sw", "$v0", curr->name, NULL));
+    AppendSeq(code, GenInstr(NULL, "sw", "$v0", (char *)curr->name, NULL));
 
     curr = curr->next;
   }
@@ -425,6 +436,16 @@ extern struct Node *appendToArgList(char *c, struct Node *next)
   struct Node *curr = (struct Node *)malloc(sizeof(struct Node));
 
   curr->name = strdup(c);
+  curr->next = next;
+
+  return curr;
+}
+
+extern struct Node *appendToExprList(struct ExprRes *Res1, struct Node *next)
+{
+  struct Node *curr = (struct Node *)malloc(sizeof(struct Node));
+
+  curr->name = Res1;
   curr->next = next;
 
   return curr;
