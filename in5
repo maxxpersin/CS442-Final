@@ -1,0 +1,32 @@
+int num1;
+int num2;
+int num3;
+int num4;
+
+read(num1, num2, num3);
+read();
+read(num4);
+
+print(num1);
+print(num2);
+print(num3);
+
+if (num4 > 10) {
+    print(num4);
+}
+printlines(1);
+
+
+
+
+print(-100, 100, 5^2, num4*2);
+printlines(5);
+print(5);
+printlines(1);
+
+print(num4^(2*1+1));
+printspaces(1);
+printspaces(0);
+print(9*num4%100);
+printspaces(9*num4%100);
+printlines(0);

@@ -24,7 +24,7 @@ extern SymTab *table;
   char * string;
   struct ExprRes * ExprRes;
   struct InstrSeq * InstrSeq;
-  //struct BExprRes * BExprRes;
+  struct Node * Node;
 }
 
 %type <string> Id
@@ -34,6 +34,8 @@ extern SymTab *table;
 %type <InstrSeq> StmtSeq
 %type <InstrSeq> Stmt
 %type <ExprRes> BExpr
+%type <Node> ArgList
+%type <Node> ExprList
 
 %token Ident 		
 %token IntLit 	
@@ -48,6 +50,9 @@ extern SymTab *table;
 %token GT_OR_EQ
 %token OR
 %token AND
+%token Read
+%token Printlines
+%token Printspaces
 
 %%
 
@@ -57,7 +62,10 @@ Declarations	:											             { };
 Dec			      :	Int Ident {enterName(table, yytext); }';'	{};
 StmtSeq 		  :	Stmt StmtSeq								     { $$ = AppendSeq($1, $2); } ;
 StmtSeq		    :											             { $$ = NULL;} ;
-Stmt			    :	Write Expr ';'								   { $$ = doPrint($2); };
+Stmt			    :	Write '(' ExprList ')' ';'			 { $$ = doPrint($3); };
+Stmt          : Printlines '(' Expr ')' ';'      { $$ = doPrintlines($3);} ;
+Stmt          : Printspaces '(' Expr ')' ';'     { $$ = doPrintspaces($3); };
+Stmt          : Read '(' ArgList ')' ';'         { $$ = doRead($3); };
 Stmt			    :	Id '=' Expr ';'								   { $$ = doAssign($1, $3);} ;
 Stmt			    :	IF '(' BExpr ')' '{' StmtSeq '}' { $$ = doIf($3, $6);};
 BExpr         : '!' BExpr                        { $$ = doNegate($2);};
@@ -70,6 +78,13 @@ BExpr         : Expr LT_OR_EQ Expr               { $$ = doBExprLtOrEq($1, $3);};
 BExpr         : Expr GT_OR_EQ Expr               { $$ = doBExprGtOrEq($1, $3);};
 BExpr         : Expr LT Expr                     { $$ = doBExprLt($1, $3);};
 BExpr         : Expr GT Expr                     { $$ = doBExprGt($1, $3);};
+ArgList       : Id                               { $$ = appendToArgList($1, NULL); };
+ArgList       : Id ',' ArgList                   { $$ = appendToArgList($1, $3);};
+ArgList       :                                  {};
+ExprList      : Expr                             { $$ = appendToExprList($1, NULL);};
+ExprList      : Expr ',' ExprList                { $$ = appendToExprList($1, $3);};
+ExprList      :                                  {};
+Expr          : '(' Expr ')'                     { $$ = $2; };
 Expr			    :	Expr '+' Term								     { $$ = doAdd($1, $3); } ;
 Expr          : Expr '-' Term                    { $$ = doSubtraction($1, $3);};
 Expr			    :	Term									           { $$ = $1; };
@@ -78,6 +93,7 @@ Term          : Term '/' Factor                  { $$ = doDiv($1, $3); };
 Term          : Term '^' Factor                  { $$ = doExponential($1, $3); };
 Term          : Term '%' Factor                  { $$ = doModulo($1, $3); };
 Term		      :	Factor									         { $$ = $1; };
+Factor        : '(' Expr ')'                     { $$ = $2; };
 Factor		    :	IntLit									         { $$ = doIntLit(yytext); };
 Factor        : '-'IntLit                        { $$ = doIntLitNeg(yytext); };
 Factor		    :	Ident									           { $$ = doRval(yytext); };

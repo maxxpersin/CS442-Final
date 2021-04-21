@@ -122,39 +122,44 @@ struct ExprRes *doDiv(struct ExprRes *Res1, struct ExprRes *Res2)
   return Res1;
 }
 
-// Base stored in Res1->Instrs->Oprnd2
-// Exponent stored in Res2->Instrs->Oprnd2
+// Base stored in Res1->Reg
+// Exponent stored in Res2->Reg
 // Loop over exponent and create instrs where we multiply base by itself
 struct ExprRes *doExponential(struct ExprRes *Res1, struct ExprRes *Res2)
 {
-  int reg, i;
-  char *base = Res1->Instrs->Oprnd2;
-  char *exp = Res2->Instrs->Oprnd2;
-
-  reg = AvailTmpReg();
+  int reg = AvailTmpReg();
+  int reg2 = AvailTmpReg();
+  int reg3 = AvailTmpReg();
+  char *label = GenLabel();
+  char *label2 = GenLabel();
+  char *label3 = GenLabel();
   AppendSeq(Res1->Instrs, Res2->Instrs);
 
-  if (atoi(exp) > 1)
-  {
-    for (i = 0; i < atoi(exp) - 2; i++)
-    {
-      AppendSeq(Res1->Instrs, GenInstr(NULL, "mul", TmpRegName(Res1->Reg), TmpRegName(Res1->Reg), strdup(base)));
-    }
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "move", TmpRegName(reg), TmpRegName(Res1->Reg), NULL));
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "move", TmpRegName(reg2), TmpRegName(Res2->Reg), NULL));
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "move", TmpRegName(reg3), TmpRegName(Res2->Reg), NULL));
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "sub", TmpRegName(reg3), TmpRegName(reg3), "1"));
 
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "mul", TmpRegName(reg), TmpRegName(Res1->Reg), strdup(base)));
-  }
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "beq", "$zero", TmpRegName(reg3), label3));
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "sub", TmpRegName(reg2), TmpRegName(reg2), "1"));
 
-  if (atoi(exp) == 0)
-  {
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "add", TmpRegName(reg), "0", "0"));
-  }
-  else if (atoi(exp) == 1)
-  {
-    AppendSeq(Res1->Instrs, GenInstr(NULL, "add", TmpRegName(reg), TmpRegName(Res1->Reg), "0"));
-  }
+  AppendSeq(Res1->Instrs, GenInstr(label, NULL, NULL, NULL, NULL));
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "beq", "$zero", TmpRegName(reg2), label2));
+
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "mul", TmpRegName(reg), TmpRegName(reg), TmpRegName(Res1->Reg)));
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "sub", TmpRegName(reg2), TmpRegName(reg2), "1"));
+
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "j", label, NULL, NULL));
+
+  AppendSeq(Res1->Instrs, GenInstr(label3, NULL, NULL, NULL, NULL));
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "li", TmpRegName(reg), "1", NULL));
+
+  AppendSeq(Res1->Instrs, GenInstr(label2, NULL, NULL, NULL, NULL));
 
   ReleaseTmpReg(Res1->Reg);
   ReleaseTmpReg(Res2->Reg);
+  ReleaseTmpReg(reg2);
+  ReleaseTmpReg(reg3);
 
   Res1->Reg = reg;
   free(Res2);
@@ -167,7 +172,7 @@ extern struct ExprRes *doModulo(struct ExprRes *Res1, struct ExprRes *Res2)
   int reg;
   reg = AvailTmpReg();
   AppendSeq(Res1->Instrs, Res2->Instrs);
-  AppendSeq(Res1->Instrs, GenInstr(NULL, "div", NULL, TmpRegName(Res1->Reg), TmpRegName(Res2->Reg))); // We dont care about the quotient
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "div", TmpRegName(reg), TmpRegName(Res1->Reg), TmpRegName(Res2->Reg))); // We dont care about the quotient
   AppendSeq(Res1->Instrs, GenInstr(NULL, "mfhi", TmpRegName(reg), NULL, NULL));
 
   ReleaseTmpReg(Res1->Reg);
@@ -178,23 +183,97 @@ extern struct ExprRes *doModulo(struct ExprRes *Res1, struct ExprRes *Res2)
   return Res1;
 }
 
-struct InstrSeq *doPrint(struct ExprRes *Expr)
+struct InstrSeq *doPrint(struct Node *node)
 {
 
-  struct InstrSeq *code;
+  struct InstrSeq *code = (struct InstrSeq *)malloc(sizeof(struct InstrSeq));
 
-  code = Expr->Instrs;
+  struct Node *curr = node;
+  while (curr)
+  {
+    struct ExprRes *currInstr = (struct ExprRes *)curr->name;
+    AppendSeq(code, currInstr->Instrs);
+    AppendSeq(code, GenInstr(NULL, "li", "$v0", "1", NULL));
+    AppendSeq(code, GenInstr(NULL, "move", "$a0", TmpRegName(currInstr->Reg), NULL));
+    AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
 
-  AppendSeq(code, GenInstr(NULL, "li", "$v0", "1", NULL));
-  AppendSeq(code, GenInstr(NULL, "move", "$a0", TmpRegName(Expr->Reg), NULL));
-  AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
+    ReleaseTmpReg(currInstr->Reg);
+    free(currInstr);
+    curr = curr->next;
+  }
+  return code;
+}
+
+extern struct InstrSeq *doPrintlines(struct ExprRes *Res)
+{
+  struct InstrSeq *code = (struct InstrSeq *)malloc(sizeof(struct InstrSeq));
+  int reg = AvailTmpReg();
+  AppendSeq(code, Res->Instrs);
+  AppendSeq(code, GenInstr(NULL, "move", TmpRegName(reg), TmpRegName(Res->Reg), NULL));
+
+  char *label = GenLabel();
+  char *label2 = GenLabel();
+
+  AppendSeq(code, GenInstr(NULL, "beq", "$zero", TmpRegName(reg), label2));
+  AppendSeq(code, GenInstr(label, NULL, NULL, NULL, NULL)); // Label to jump back to, based on amount of new lines desired;
 
   AppendSeq(code, GenInstr(NULL, "li", "$v0", "4", NULL));
   AppendSeq(code, GenInstr(NULL, "la", "$a0", "_nl", NULL));
   AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
 
-  ReleaseTmpReg(Expr->Reg);
-  free(Expr);
+  AppendSeq(code, GenInstr(NULL, "sub", TmpRegName(reg), TmpRegName(reg), "1"));
+  AppendSeq(code, GenInstr(NULL, "bne", "$zero", TmpRegName(reg), label));
+  AppendSeq(code, GenInstr(label2, NULL, NULL, NULL, NULL));
+
+  ReleaseTmpReg(reg);
+  ReleaseTmpReg(Res->Reg);
+
+  free(Res);
+
+  return code;
+}
+
+extern struct InstrSeq *doPrintspaces(struct ExprRes *Res)
+{
+  struct InstrSeq *code = (struct InstrSeq *)malloc(sizeof(struct InstrSeq));
+  int reg = AvailTmpReg();
+  AppendSeq(code, Res->Instrs);
+  AppendSeq(code, GenInstr(NULL, "move", TmpRegName(reg), TmpRegName(Res->Reg), NULL));
+
+  char *label = GenLabel();
+  char *label2 = GenLabel();
+
+  AppendSeq(code, GenInstr(NULL, "beq", "$zero", TmpRegName(reg), label2));
+  AppendSeq(code, GenInstr(label, NULL, NULL, NULL, NULL)); // Label to jump back to, based on amount of new lines desired;
+
+  AppendSeq(code, GenInstr(NULL, "li", "$v0", "4", NULL));
+  AppendSeq(code, GenInstr(NULL, "la", "$a0", "_space", NULL));
+  AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
+
+  AppendSeq(code, GenInstr(NULL, "sub", TmpRegName(reg), TmpRegName(reg), "1"));
+  AppendSeq(code, GenInstr(NULL, "bne", "$zero", TmpRegName(reg), label));
+  AppendSeq(code, GenInstr(label2, NULL, NULL, NULL, NULL));
+
+  ReleaseTmpReg(reg);
+  ReleaseTmpReg(Res->Reg);
+
+  free(Res);
+  return code;
+}
+
+extern struct InstrSeq *doRead(struct Node *node)
+{
+  struct InstrSeq *code = (struct InstrSeq *)malloc(sizeof(struct InstrSeq));
+
+  struct Node *curr = node;
+  while (curr)
+  {
+    AppendSeq(code, GenInstr(NULL, "li", "$v0", "5", NULL));
+    AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
+    AppendSeq(code, GenInstr(NULL, "sw", "$v0", (char *)curr->name, NULL));
+
+    curr = curr->next;
+  }
 
   return code;
 }
@@ -402,6 +481,26 @@ extern struct InstrSeq *doIf(struct ExprRes *Res, struct InstrSeq *seq)
   return seq2;
 }
 
+extern struct Node *appendToArgList(char *c, struct Node *next)
+{
+  struct Node *curr = (struct Node *)malloc(sizeof(struct Node));
+
+  curr->name = strdup(c);
+  curr->next = next;
+
+  return curr;
+}
+
+extern struct Node *appendToExprList(struct ExprRes *Res1, struct Node *next)
+{
+  struct Node *curr = (struct Node *)malloc(sizeof(struct Node));
+
+  curr->name = Res1;
+  curr->next = next;
+
+  return curr;
+}
+
 /*
 
 extern struct InstrSeq * doIf(struct ExprRes *res1, struct ExprRes *res2, struct InstrSeq * seq) {
@@ -437,6 +536,7 @@ void Finish(struct InstrSeq *Code)
   AppendSeq(code, GenInstr(NULL, ".data", NULL, NULL, NULL));
   AppendSeq(code, GenInstr(NULL, ".align", "4", NULL, NULL));
   AppendSeq(code, GenInstr("_nl", ".asciiz", "\"\\n\"", NULL, NULL));
+  AppendSeq(code, GenInstr("_space", ".asciiz", "\" \"", NULL, NULL));
 
   hasMore = startIterator(table);
   while (hasMore)

@@ -6,31 +6,31 @@ y = 0;
 z = 0;
 
 if (x > y) {
-    print z;
+    print(z);
 }
 
 if (x < y) {
-    print z + 1;
+    print(z + 1);
 }
 
 x = x * 2;
 if (x == 20) {
-    print z + 2;
+    print(z + 2);
 }
 
 if (x >= 20) {
-    print z + 3;
+    print(z + 3);
 }
 
 if (x <= 20) {
-    print z + 4;
+    print(z + 4);
 }
 
 x = 22;
 if (x <= 20) {
-    print z + 5;
+    print(z + 5);
 }
 
 if (x >= 20) {
-    print z + 6;
+    print(z + 6);
 }
