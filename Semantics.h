@@ -48,6 +48,7 @@ extern struct ExprRes *doModulo(struct ExprRes *Res1, struct ExprRes *Res2);
 
 extern struct InstrSeq *doPrint(struct Node *node);
 extern struct InstrSeq *doPrintlines(struct ExprRes *Res);
+extern struct InstrSeq *doPrintspaces(struct ExprRes *Res);
 extern struct InstrSeq *doRead(struct Node *node);
 
 extern struct ExprRes *doBExprEq(struct ExprRes *Res1, struct ExprRes *Res2);
@@ -61,9 +62,7 @@ extern struct ExprRes *doNegate(struct ExprRes *Res1);
 extern struct ExprRes *doOr(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct ExprRes *doAnd(struct ExprRes *Res1, struct ExprRes *Res2);
 
-
 extern struct InstrSeq *doIf(struct ExprRes *Res, struct InstrSeq *seq);
-
 
 extern struct Node *appendToArgList(char *c, struct Node *next);
 extern struct Node *appendToExprList(struct ExprRes *Res1, struct Node *next);

@@ -19,6 +19,7 @@ if					{return IF;}
 int					{return Int;}
 read        {return Read;}
 printlines  {return Printlines;}
+printspaces {return Printspaces;}
 print					{return Write;}
 {letter}({letter}|{digit})*	{return Ident;}
 {digit}{digit}*		{return IntLit;}

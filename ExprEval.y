@@ -52,6 +52,7 @@ extern SymTab *table;
 %token AND
 %token Read
 %token Printlines
+%token Printspaces
 
 %%
 
@@ -63,6 +64,7 @@ StmtSeq 		  :	Stmt StmtSeq								     { $$ = AppendSeq($1, $2); } ;
 StmtSeq		    :											             { $$ = NULL;} ;
 Stmt			    :	Write '(' ExprList ')' ';'			 { $$ = doPrint($3); };
 Stmt          : Printlines '(' Expr ')' ';'      { $$ = doPrintlines($3);} ;
+Stmt          : Printspaces '(' Expr ')' ';'     { $$ = doPrintspaces($3); };
 Stmt          : Read '(' ArgList ')' ';'         { $$ = doRead($3); };
 Stmt			    :	Id '=' Expr ';'								   { $$ = doAssign($1, $3);} ;
 Stmt			    :	IF '(' BExpr ')' '{' StmtSeq '}' { $$ = doIf($3, $6);};

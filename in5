@@ -25,3 +25,8 @@ print(5);
 printlines(1);
 
 print(num4^(2*1+1));
+printspaces(1);
+printspaces(0);
+print(9*num4%100);
+printspaces(9*num4%100);
+printlines(0);

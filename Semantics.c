@@ -172,7 +172,7 @@ extern struct ExprRes *doModulo(struct ExprRes *Res1, struct ExprRes *Res2)
   int reg;
   reg = AvailTmpReg();
   AppendSeq(Res1->Instrs, Res2->Instrs);
-  AppendSeq(Res1->Instrs, GenInstr(NULL, "div", NULL, TmpRegName(Res1->Reg), TmpRegName(Res2->Reg))); // We dont care about the quotient
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "div", TmpRegName(reg), TmpRegName(Res1->Reg), TmpRegName(Res2->Reg))); // We dont care about the quotient
   AppendSeq(Res1->Instrs, GenInstr(NULL, "mfhi", TmpRegName(reg), NULL, NULL));
 
   ReleaseTmpReg(Res1->Reg);
@@ -201,14 +201,6 @@ struct InstrSeq *doPrint(struct Node *node)
     free(currInstr);
     curr = curr->next;
   }
-
-  /**
-  * this section prints a new line, temporarily removing
-  */
-  // AppendSeq(code, GenInstr(NULL, "li", "$v0", "4", NULL));
-  // AppendSeq(code, GenInstr(NULL, "la", "$a0", "_nl", NULL));
-  // AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
-
   return code;
 }
 
@@ -220,6 +212,9 @@ extern struct InstrSeq *doPrintlines(struct ExprRes *Res)
   AppendSeq(code, GenInstr(NULL, "move", TmpRegName(reg), TmpRegName(Res->Reg), NULL));
 
   char *label = GenLabel();
+  char *label2 = GenLabel();
+
+  AppendSeq(code, GenInstr(NULL, "beq", "$zero", TmpRegName(reg), label2));
   AppendSeq(code, GenInstr(label, NULL, NULL, NULL, NULL)); // Label to jump back to, based on amount of new lines desired;
 
   AppendSeq(code, GenInstr(NULL, "li", "$v0", "4", NULL));
@@ -228,12 +223,41 @@ extern struct InstrSeq *doPrintlines(struct ExprRes *Res)
 
   AppendSeq(code, GenInstr(NULL, "sub", TmpRegName(reg), TmpRegName(reg), "1"));
   AppendSeq(code, GenInstr(NULL, "bne", "$zero", TmpRegName(reg), label));
+  AppendSeq(code, GenInstr(label2, NULL, NULL, NULL, NULL));
 
   ReleaseTmpReg(reg);
   ReleaseTmpReg(Res->Reg);
 
   free(Res);
 
+  return code;
+}
+
+extern struct InstrSeq *doPrintspaces(struct ExprRes *Res)
+{
+  struct InstrSeq *code = (struct InstrSeq *)malloc(sizeof(struct InstrSeq));
+  int reg = AvailTmpReg();
+  AppendSeq(code, Res->Instrs);
+  AppendSeq(code, GenInstr(NULL, "move", TmpRegName(reg), TmpRegName(Res->Reg), NULL));
+
+  char *label = GenLabel();
+  char *label2 = GenLabel();
+
+  AppendSeq(code, GenInstr(NULL, "beq", "$zero", TmpRegName(reg), label2));
+  AppendSeq(code, GenInstr(label, NULL, NULL, NULL, NULL)); // Label to jump back to, based on amount of new lines desired;
+
+  AppendSeq(code, GenInstr(NULL, "li", "$v0", "4", NULL));
+  AppendSeq(code, GenInstr(NULL, "la", "$a0", "_space", NULL));
+  AppendSeq(code, GenInstr(NULL, "syscall", NULL, NULL, NULL));
+
+  AppendSeq(code, GenInstr(NULL, "sub", TmpRegName(reg), TmpRegName(reg), "1"));
+  AppendSeq(code, GenInstr(NULL, "bne", "$zero", TmpRegName(reg), label));
+  AppendSeq(code, GenInstr(label2, NULL, NULL, NULL, NULL));
+
+  ReleaseTmpReg(reg);
+  ReleaseTmpReg(Res->Reg);
+
+  free(Res);
   return code;
 }
 
@@ -512,6 +536,7 @@ void Finish(struct InstrSeq *Code)
   AppendSeq(code, GenInstr(NULL, ".data", NULL, NULL, NULL));
   AppendSeq(code, GenInstr(NULL, ".align", "4", NULL, NULL));
   AppendSeq(code, GenInstr("_nl", ".asciiz", "\"\\n\"", NULL, NULL));
+  AppendSeq(code, GenInstr("_space", ".asciiz", "\" \"", NULL, NULL));
 
   hasMore = startIterator(table);
   while (hasMore)
