@@ -51,6 +51,7 @@ extern SymTab *table;
 %token OR
 %token AND
 %token Read
+%token Printlines
 
 %%
 
@@ -60,7 +61,8 @@ Declarations	:											             { };
 Dec			      :	Int Ident {enterName(table, yytext); }';'	{};
 StmtSeq 		  :	Stmt StmtSeq								     { $$ = AppendSeq($1, $2); } ;
 StmtSeq		    :											             { $$ = NULL;} ;
-Stmt			    :	Write '(' ExprList ')' ';'				 { $$ = doPrint($3); };
+Stmt			    :	Write '(' ExprList ')' ';'			 { $$ = doPrint($3); };
+Stmt          : Printlines '(' Expr ')' ';'      { $$ = doPrintlines($3);} ;
 Stmt          : Read '(' ArgList ')' ';'         { $$ = doRead($3); };
 Stmt			    :	Id '=' Expr ';'								   { $$ = doAssign($1, $3);} ;
 Stmt			    :	IF '(' BExpr ')' '{' StmtSeq '}' { $$ = doIf($3, $6);};

@@ -18,6 +18,7 @@ digit [0-9]
 if					{return IF;}
 int					{return Int;}
 read        {return Read;}
+printlines  {return Printlines;}
 print					{return Write;}
 {letter}({letter}|{digit})*	{return Ident;}
 {digit}{digit}*		{return IntLit;}

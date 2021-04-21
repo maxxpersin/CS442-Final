@@ -15,4 +15,6 @@ if (num4 > 10) {
     print(num4);
 }
 
-print(-100, 100, 5^2, num4);
+print(-100, 100, 5^2, num4*2);
+printlines(5);
+print(5);
