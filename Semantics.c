@@ -152,7 +152,7 @@ struct ExprRes *doExponential(struct ExprRes *Res1, struct ExprRes *Res2)
   AppendSeq(Res1->Instrs, GenInstr(NULL, "j", label, NULL, NULL));
 
   AppendSeq(Res1->Instrs, GenInstr(label3, NULL, NULL, NULL, NULL));
-  AppendSeq(Res1->Instrs, GenInstr(NULL, "li", TmpRegName(reg), "1", NULL));
+  AppendSeq(Res1->Instrs, GenInstr(NULL, "move", TmpRegName(reg), TmpRegName(Res1->Reg), NULL));
 
   AppendSeq(Res1->Instrs, GenInstr(label2, NULL, NULL, NULL, NULL));
 

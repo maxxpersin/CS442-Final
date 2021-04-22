@@ -23,4 +23,4 @@ In the terminal, run
 ```
 $ ./compile.sh
 ```
-To compile and execute with the input program set as in1.txt
+To compile and execute with the input program set as in1

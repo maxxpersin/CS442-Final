@@ -59,7 +59,7 @@ extern SymTab *table;
 Prog			    :	Declarations StmtSeq						 {Finish($2); } ;
 Declarations	:	Dec Declarations							   { };
 Declarations	:											             { };
-Dec			      :	Int Ident {enterName(table, yytext); }';'	{};
+Dec			      :	Int Ident                        {enterName(table, yytext); }';'	{};
 StmtSeq 		  :	Stmt StmtSeq								     { $$ = AppendSeq($1, $2); } ;
 StmtSeq		    :											             { $$ = NULL;} ;
 Stmt			    :	Write '(' ExprList ')' ';'			 { $$ = doPrint($3); };
