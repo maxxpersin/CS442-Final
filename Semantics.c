@@ -481,6 +481,22 @@ extern struct InstrSeq *doIf(struct ExprRes *Res, struct InstrSeq *seq)
   return seq2;
 }
 
+extern struct InstrSeq *doIfElse(struct ExprRes *Res, struct InstrSeq *seq, struct InstrSeq *seq2)
+{
+  struct InstrSeq *code;
+  char *label = GenLabel();
+  char *label2 = GenLabel();
+  AppendSeq(Res->Instrs, GenInstr(NULL, "beq", "$zero", TmpRegName(Res->Reg), label));
+  code = AppendSeq(Res->Instrs, seq);
+  AppendSeq(code, GenInstr(label, NULL, NULL, NULL, NULL));
+  AppendSeq(code, GenInstr(NULL, "bne", "$zero", TmpRegName(Res->Reg), label2));
+  AppendSeq(code, seq2);
+  AppendSeq(code, GenInstr(label2, NULL, NULL, NULL, NULL));
+
+  free(Res);
+  return code;
+}
+
 extern struct Node *appendToArgList(char *c, struct Node *next)
 {
   struct Node *curr = (struct Node *)malloc(sizeof(struct Node));

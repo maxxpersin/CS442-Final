@@ -63,6 +63,7 @@ extern struct ExprRes *doOr(struct ExprRes *Res1, struct ExprRes *Res2);
 extern struct ExprRes *doAnd(struct ExprRes *Res1, struct ExprRes *Res2);
 
 extern struct InstrSeq *doIf(struct ExprRes *Res, struct InstrSeq *seq);
+extern struct InstrSeq *doIfElse(struct ExprRes *Res, struct InstrSeq *seq, struct InstrSeq *seq2);
 
 extern struct Node *appendToArgList(char *c, struct Node *next);
 extern struct Node *appendToExprList(struct ExprRes *Res1, struct Node *next);
