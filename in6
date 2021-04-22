@@ -7,3 +7,8 @@ if (val % 2 == 0) {
 } else {
     print(2);
 }
+
+while(val > 0) {
+    print(val);
+    val = val - 1;
+}

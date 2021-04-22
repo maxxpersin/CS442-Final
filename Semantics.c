@@ -486,6 +486,7 @@ extern struct InstrSeq *doIfElse(struct ExprRes *Res, struct InstrSeq *seq, stru
   struct InstrSeq *code;
   char *label = GenLabel();
   char *label2 = GenLabel();
+
   AppendSeq(Res->Instrs, GenInstr(NULL, "beq", "$zero", TmpRegName(Res->Reg), label));
   code = AppendSeq(Res->Instrs, seq);
   AppendSeq(code, GenInstr(label, NULL, NULL, NULL, NULL));
@@ -493,6 +494,22 @@ extern struct InstrSeq *doIfElse(struct ExprRes *Res, struct InstrSeq *seq, stru
   AppendSeq(code, seq2);
   AppendSeq(code, GenInstr(label2, NULL, NULL, NULL, NULL));
 
+  free(Res);
+  return code;
+}
+
+extern struct InstrSeq *doWhile(struct ExprRes *Res, struct InstrSeq *seq)
+{
+  struct InstrSeq *code = (struct InstrSeq *)malloc(sizeof(struct InstrSeq));
+  char *label = GenLabel();
+  char *label2 = GenLabel();
+  AppendSeq(code, GenInstr(label, NULL, NULL, NULL, NULL));
+  AppendSeq(code, Res->Instrs);
+  AppendSeq(code, GenInstr(NULL, "beq", "$zero", TmpRegName(Res->Reg), label2));
+  AppendSeq(code, seq);
+  AppendSeq(code, GenInstr(NULL, "j", label, NULL, NULL));
+  AppendSeq(code, GenInstr(label2, NULL, NULL, NULL, NULL));
+  
   free(Res);
   return code;
 }

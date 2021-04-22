@@ -54,6 +54,7 @@ extern SymTab *table;
 %token Printlines
 %token Printspaces
 %token ELSE
+%token WHILE
 
 %%
 
@@ -70,6 +71,7 @@ Stmt          : Read '(' ArgList ')' ';'                                        
 Stmt			    :	Id '=' Expr ';'								                                      { $$ = doAssign($1, $3); };
 Stmt			    :	IF '(' BExpr ')' '{' StmtSeq '}'                                    { $$ = doIf($3, $6); };
 Stmt          : IF '(' BExpr ')' '{' StmtSeq '}' ELSE '{' StmtSeq '}'               { $$ = doIfElse($3, $6, $10); };
+Stmt          : WHILE '(' BExpr ')' '{' StmtSeq '}'                                 { $$ = doWhile($3, $6); };
 BExpr         : '!' BExpr                                                           { $$ = doNegate($2); };
 BExpr         : BExpr OR BExpr                                                      { $$ = doOr($1, $3); };
 BExpr         : BExpr AND BExpr                                                     { $$ = doAnd($1, $3); };
