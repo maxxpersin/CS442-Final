@@ -509,8 +509,28 @@ extern struct InstrSeq *doWhile(struct ExprRes *Res, struct InstrSeq *seq)
   AppendSeq(code, seq);
   AppendSeq(code, GenInstr(NULL, "j", label, NULL, NULL));
   AppendSeq(code, GenInstr(label2, NULL, NULL, NULL, NULL));
-  
+
   free(Res);
+  return code;
+}
+
+extern struct InstrSeq *doFor(struct InstrSeq *Assignment, struct ExprRes *CondRes, struct InstrSeq *Assignment2, struct InstrSeq *seq)
+{
+  struct InstrSeq *code = (struct InstrSeq *)malloc(sizeof(struct InstrSeq));
+  char *label = GenLabel();
+  char *label2 = GenLabel();
+
+  AppendSeq(code, Assignment);
+  AppendSeq(code, GenInstr(label, NULL, NULL, NULL, NULL));
+  AppendSeq(code, CondRes->Instrs);
+  AppendSeq(code, GenInstr(NULL, "beq", "$zero", TmpRegName(CondRes->Reg), label2));
+  AppendSeq(code, seq);
+  AppendSeq(code, Assignment2);
+  AppendSeq(code, GenInstr(NULL, "j", label, NULL, NULL));
+  AppendSeq(code, GenInstr(label2, NULL, NULL, NULL, NULL));
+
+  ReleaseTmpReg(CondRes->Reg);
+  free(CondRes);
   return code;
 }
 

@@ -33,6 +33,7 @@ extern SymTab *table;
 %type <ExprRes> Expr
 %type <InstrSeq> StmtSeq
 %type <InstrSeq> Stmt
+%type <InstrSeq> AssnmtStmt
 %type <ExprRes> BExpr
 %type <Node> ArgList
 %type <Node> ExprList
@@ -55,6 +56,7 @@ extern SymTab *table;
 %token Printspaces
 %token ELSE
 %token WHILE
+%token FOR
 
 %%
 
@@ -68,10 +70,12 @@ Stmt			    :	Write '(' ExprList ')' ';'			                                    { 
 Stmt          : Printlines '(' Expr ')' ';'                                         { $$ = doPrintlines($3);} ;
 Stmt          : Printspaces '(' Expr ')' ';'                                        { $$ = doPrintspaces($3); };
 Stmt          : Read '(' ArgList ')' ';'                                            { $$ = doRead($3); };
-Stmt			    :	Id '=' Expr ';'								                                      { $$ = doAssign($1, $3); };
 Stmt			    :	IF '(' BExpr ')' '{' StmtSeq '}'                                    { $$ = doIf($3, $6); };
 Stmt          : IF '(' BExpr ')' '{' StmtSeq '}' ELSE '{' StmtSeq '}'               { $$ = doIfElse($3, $6, $10); };
 Stmt          : WHILE '(' BExpr ')' '{' StmtSeq '}'                                 { $$ = doWhile($3, $6); };
+Stmt          : FOR '(' AssnmtStmt ';' BExpr ';' AssnmtStmt ')' '{' StmtSeq '}'     { $$ = doFor($3, $5, $7, $10); };
+Stmt          : AssnmtStmt ';'                                                      { $$ = $1; };
+AssnmtStmt		:	Id '=' Expr								                                          { $$ = doAssign($1, $3); };
 BExpr         : '!' BExpr                                                           { $$ = doNegate($2); };
 BExpr         : BExpr OR BExpr                                                      { $$ = doOr($1, $3); };
 BExpr         : BExpr AND BExpr                                                     { $$ = doAnd($1, $3); };
