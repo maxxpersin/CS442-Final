@@ -481,6 +481,59 @@ extern struct InstrSeq *doIf(struct ExprRes *Res, struct InstrSeq *seq)
   return seq2;
 }
 
+extern struct InstrSeq *doIfElse(struct ExprRes *Res, struct InstrSeq *seq, struct InstrSeq *seq2)
+{
+  struct InstrSeq *code;
+  char *label = GenLabel();
+  char *label2 = GenLabel();
+
+  AppendSeq(Res->Instrs, GenInstr(NULL, "beq", "$zero", TmpRegName(Res->Reg), label));
+  code = AppendSeq(Res->Instrs, seq);
+  AppendSeq(code, GenInstr(label, NULL, NULL, NULL, NULL));
+  AppendSeq(code, GenInstr(NULL, "bne", "$zero", TmpRegName(Res->Reg), label2));
+  AppendSeq(code, seq2);
+  AppendSeq(code, GenInstr(label2, NULL, NULL, NULL, NULL));
+
+  free(Res);
+  return code;
+}
+
+extern struct InstrSeq *doWhile(struct ExprRes *Res, struct InstrSeq *seq)
+{
+  struct InstrSeq *code = (struct InstrSeq *)malloc(sizeof(struct InstrSeq));
+  char *label = GenLabel();
+  char *label2 = GenLabel();
+  AppendSeq(code, GenInstr(label, NULL, NULL, NULL, NULL));
+  AppendSeq(code, Res->Instrs);
+  AppendSeq(code, GenInstr(NULL, "beq", "$zero", TmpRegName(Res->Reg), label2));
+  AppendSeq(code, seq);
+  AppendSeq(code, GenInstr(NULL, "j", label, NULL, NULL));
+  AppendSeq(code, GenInstr(label2, NULL, NULL, NULL, NULL));
+
+  free(Res);
+  return code;
+}
+
+extern struct InstrSeq *doFor(struct InstrSeq *Assignment, struct ExprRes *CondRes, struct InstrSeq *Assignment2, struct InstrSeq *seq)
+{
+  struct InstrSeq *code = (struct InstrSeq *)malloc(sizeof(struct InstrSeq));
+  char *label = GenLabel();
+  char *label2 = GenLabel();
+
+  AppendSeq(code, Assignment);
+  AppendSeq(code, GenInstr(label, NULL, NULL, NULL, NULL));
+  AppendSeq(code, CondRes->Instrs);
+  AppendSeq(code, GenInstr(NULL, "beq", "$zero", TmpRegName(CondRes->Reg), label2));
+  AppendSeq(code, seq);
+  AppendSeq(code, Assignment2);
+  AppendSeq(code, GenInstr(NULL, "j", label, NULL, NULL));
+  AppendSeq(code, GenInstr(label2, NULL, NULL, NULL, NULL));
+
+  ReleaseTmpReg(CondRes->Reg);
+  free(CondRes);
+  return code;
+}
+
 extern struct Node *appendToArgList(char *c, struct Node *next)
 {
   struct Node *curr = (struct Node *)malloc(sizeof(struct Node));

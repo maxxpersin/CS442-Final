@@ -16,6 +16,9 @@ digit [0-9]
 
 %%
 if					{return IF;}
+else        {return ELSE;}
+while       {return WHILE;}
+for         {return FOR;}
 int					{return Int;}
 read        {return Read;}
 printlines  {return Printlines;}
