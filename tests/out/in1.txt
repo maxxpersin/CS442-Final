@@ -1,0 +1,9 @@
+Loaded: /usr/local/Cellar/spim/9.1.22/share/exceptions.s
+20
+0
+1
+-1162261467
+1
+0
+1
+0

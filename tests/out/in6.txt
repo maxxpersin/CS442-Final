@@ -1,0 +1,10 @@
+Loaded: /usr/local/Cellar/spim/9.1.22/share/exceptions.s
+14321
+0
+1
+2
+3
+4
+5
+9
+10
