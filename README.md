@@ -1,4 +1,4 @@
-# CS442-Final
+# CS442-Final Maxx Persin
 Final Project for CS442
 
 # Compilation and Execution
@@ -23,18 +23,15 @@ In the terminal, run
 ```
 $ ./compile.sh
 ```
-To compile and execute with the input program set as tests/in/in1 and default output to tests/out/in1.txt
+To compile and execute all programs within tests/in/, output is directed to .txt files in tests/out/
 
 # Feature Areas Completed
-
-### First line of all outputs are appended by spim and can be ignored
 
 ## Integer Expressions
 Test files include in1, in2, in3, in4. However, arithmatic statements can be found in all other test files.
 
 ### in1 Output
 ```
-Loaded: /usr/local/Cellar/spim/9.1.22/share/exceptions.s
 20
 0
 1
@@ -46,20 +43,17 @@ Loaded: /usr/local/Cellar/spim/9.1.22/share/exceptions.s
 ```
 ### in2 Output
 ```
-Loaded: /usr/local/Cellar/spim/9.1.22/share/exceptions.s
 10201020-999-1000
 
 ```
 
 ### in3 Output
 ```
-Loaded: /usr/local/Cellar/spim/9.1.22/share/exceptions.s
 02346
 ```
 
 ### in4 Output
 ```
-Loaded: /usr/local/Cellar/spim/9.1.22/share/exceptions.s
 109
 ```
 
@@ -108,4 +102,111 @@ Loaded: /usr/local/Cellar/spim/9.1.22/share/exceptions.s
 9
 10
 
+```
+# Other Tests
+## These tests are contained in tests/test1/ 
+## t1.c - t7.c have been translated to my language
+
+### t1.c Output
+```
+27
+-13
+140
+2
+6
+6
+49
+```
+
+### t2.c Output
+```
+19
+4
+1
+262144
+```
+
+### t3.c Output
+```
+9
+8
+7
+6
+98763013270531159839239        9876
+```
+
+### t4.c Output
+```
+0
+5
+1
+0-17255
+1-17256
+2-16256
+3-16257
+4-15257
+5-15258
+```
+
+### t5.c Output
+```
+0
+5
+1
+0-17255
+1-17256
+2-16256
+3-16257
+4-15257
+5-15258
+```
+
+### t6.c Output
+```
+4
+9 
+2
+4
+249
+1
+0
+2
+012
+-1
+3
+5
+-135
+2
+4
+5
+245
+```
+
+### t7.c Output
+```
+6
+1
+2
+3
+123
+1
+3
+2
+123
+2
+1
+3
+123
+2
+3
+1
+123
+3
+1
+2
+123
+3
+2
+1
+123
 ```
