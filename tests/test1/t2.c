@@ -1,20 +1,20 @@
-#include <stdio.h>
-#include <math.h>
 
-int main(int argc, char *argv[]) {
-    int i;
-    int j;
-    int k;
-    int m;
-    i = 3;
-    j = 8;
-    k = 2;
-    m = i+j*k;
-    printf("%d\n", m);
-    m = j/i+k;
-    printf("%d\n", m);
-    m = k*j%i;
-    printf("%d\n", m);
-    m = (int) pow(8, (int) pow(2,3)); //j^k^i checks right associativity
-    printf("%d\n", m);
-}
+int i;
+int x;
+int k;
+int m;
+i = 3;
+x = 8;
+k = 2;
+m = i + x * k;
+print(m);
+printlines(1);
+m = x / i + k;
+print(m);
+printlines(1);
+m = k * x % i;
+print(m);
+printlines(1);
+m = 8^2^3;
+print(m);
+printlines(1);
